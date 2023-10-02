@@ -6,8 +6,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileHosting.DataAccess", "F
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileHosting.Domain", "FileHosting.Domain\FileHosting.Domain.csproj", "{3B1571FB-1C92-416A-8FBC-8FF916C7D72F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileHosting.Migrate", "FileHosting.Migrate\FileHosting.Migrate.csproj", "{0075A506-E3CE-49F3-A5A3-5CFFC5A9A8E7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,9 +24,5 @@ Global
 		{3B1571FB-1C92-416A-8FBC-8FF916C7D72F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B1571FB-1C92-416A-8FBC-8FF916C7D72F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B1571FB-1C92-416A-8FBC-8FF916C7D72F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0075A506-E3CE-49F3-A5A3-5CFFC5A9A8E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0075A506-E3CE-49F3-A5A3-5CFFC5A9A8E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0075A506-E3CE-49F3-A5A3-5CFFC5A9A8E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0075A506-E3CE-49F3-A5A3-5CFFC5A9A8E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
