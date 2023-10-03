@@ -25,6 +25,7 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
         var dataId = reader.GetFieldValueAsync<Guid>(3);
+        var type = reader.GetFieldValueAsync<string>(4);
         
         Task.WaitAll(guid, size, name, dataId);
         
@@ -33,7 +34,8 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
             Id = guid.Result,
             Name = name.Result,
             Size = size.Result,
-            FileDataId = dataId.Result
+            FileDataId = dataId.Result,
+            Type = type.Result
         };
     }
 
@@ -56,6 +58,7 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
         var dataId = reader.GetFieldValueAsync<Guid>(3);
+        var type = reader.GetFieldValueAsync<string>(4);
         
         Task.WaitAll(guid, size, name, dataId);
         
@@ -64,7 +67,8 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
             Id = guid.Result,
             Name = name.Result,
             Size = size.Result,
-            FileDataId = dataId.Result
+            FileDataId = dataId.Result,
+            Type = type.Result
         };
     }
 
@@ -82,6 +86,7 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
         var dataId = reader.GetFieldValueAsync<Guid>(3);
+        var type = reader.GetFieldValueAsync<string>(4);
         
         Task.WaitAll(guid, size, name, dataId);
         
@@ -90,7 +95,8 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
             Id = guid.Result,
             Name = name.Result,
             Size = size.Result,
-            FileDataId = dataId.Result
+            FileDataId = dataId.Result,
+            Type = type.Result
         };
     }
     
@@ -142,20 +148,22 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
         var meta = new List<DbFileMeta>();
 
         while (await reader.ReadAsync())
-        {;
+        {
             var guid = reader.GetFieldValueAsync<Guid>(0);
             var size = reader.GetFieldValueAsync<long>(1);
             var name = reader.GetFieldValueAsync<string>(2);
             var dataId = reader.GetFieldValueAsync<Guid>(3);
+            var type = reader.GetFieldValueAsync<string>(4);
         
-            Task.WaitAll(guid, size, name, dataId);
+            Task.WaitAll(guid, size, name, dataId, type);
         
             meta.Add(new DbFileMeta
             {
                 Id = guid.Result,
                 Name = name.Result,
                 Size = size.Result,
-                FileDataId = dataId.Result
+                FileDataId = dataId.Result,
+                Type = type.Result
             });
         }
 

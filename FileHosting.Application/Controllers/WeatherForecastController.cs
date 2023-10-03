@@ -1,4 +1,5 @@
 using FileHosting.DataAccess.Repositories;
+using FileHosting.Domain.Dto;
 using FileHosting.Domain.Entities;
 using FileHosting.Extensions;
 using FileHosting.Models;
@@ -33,5 +34,22 @@ public class WeatherForecastController : ControllerBase
             await Task.Delay(500);
             i--;
         }
+    }
+
+    [HttpPost]
+    public async Task UploadFile(IFormFile formFile)
+    {
+        using var memoryStream = new MemoryStream();
+        await formFile.CopyToAsync(memoryStream);
+        
+        var fileDto = new FullFileDto
+        {
+            Name = formFile.FileName,
+            Type = formFile.ContentType,
+            SizeInBytes = formFile.Length,
+            Content = memoryStream.ToArray();
+        };
+        
+        
     }
 }

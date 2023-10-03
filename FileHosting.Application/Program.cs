@@ -1,9 +1,10 @@
 using FileHosting.DataAccess.Repositories;
 using FileHosting.Domain.Entities;
+using FileHosting.Domain.Services;
+using FileHosting.Domain.Services.Interfaces;
 using FileHosting.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString")!;
 
 // Add services to the container.
 
@@ -12,8 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<NpgsqlRepository<DbFileMeta>>(repo =>
-    ActivatorUtilities.CreateInstance<FileMetaRepository>(repo, connectionString));
+builder.LoadDependencies();
 
 var app = builder.Build();
 
