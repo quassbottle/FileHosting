@@ -1,6 +1,8 @@
-﻿namespace FileHosting.DataAccess.Repositories.Interfaces;
+﻿using FileHosting.Domain.Entities;
 
-public interface IFileUrlRepository : IBaseRepository<FileUrlRepository>
+namespace FileHosting.DataAccess.Repositories.Interfaces;
+
+public interface IFileUrlRepository : IBaseRepository<DbFileUrl>
 {
     
 }

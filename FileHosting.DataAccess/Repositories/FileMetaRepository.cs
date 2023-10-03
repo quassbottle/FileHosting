@@ -1,17 +1,22 @@
-﻿using FileHosting.DataAccess.Repositories.Interfaces;
+﻿using FileHosting.DataAccess.Providers;
+using FileHosting.DataAccess.Repositories.Interfaces;
 using FileHosting.Domain.Entities;
+using Npgsql;
 
 namespace FileHosting.DataAccess.Repositories;
 
-public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaRepository
+public class FileMetaRepository : IFileMetaRepository
 {
-    public FileMetaRepository(string connectionString) : base(connectionString)
+    private readonly NpgsqlDataSource _dataSource;
+    
+    public FileMetaRepository(NpgsqlDataSourceProvider provider)
     {
+        _dataSource = provider.GetDataSource();
     }
 
-    public override async Task<DbFileMeta> UpdateAsync(DbFileMeta meta, Guid id)
+    public async Task<DbFileMeta> UpdateAsync(DbFileMeta meta, Guid id)
     {
-        var cmd = await CreateCommandAsync("UPDATE file_meta SET size = @size, name = @name, data_id = @data_id WHERE id = @id RETURNING *;");
+        var cmd = _dataSource.CreateCommand("UPDATE file_meta SET size = @size, name = @name, data_id = @data_id WHERE id = @id RETURNING *;");
 
         cmd.Parameters.AddWithValue("id", id);
         cmd.Parameters.AddWithValue("size", meta.Size);
@@ -39,16 +44,16 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
         };
     }
 
-    public override async Task<int> DeleteByGuid(Guid id)
+    public async Task<int> DeleteByGuid(Guid id)
     {
-        var cmd = await CreateCommandAsync("DELETE FROM file_meta WHERE id = $1;");
+        var cmd = _dataSource.CreateCommand("DELETE FROM file_meta WHERE id = $1;");
         cmd.Parameters.AddWithValue(id);
         return await cmd.ExecuteNonQueryAsync();
     }
 
-    public override async Task<DbFileMeta> FindByGuidAsync(Guid id)
+    public async Task<DbFileMeta> FindByGuidAsync(Guid id)
     {
-        var cmd = await this.CreateCommandAsync("SELECT * FROM file_meta WHERE id = $1");
+        var cmd = _dataSource.CreateCommand("SELECT * FROM file_meta WHERE id = $1");
         
         cmd.Parameters.AddWithValue(id);
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -72,9 +77,9 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
         };
     }
 
-    public override async Task<DbFileMeta> CreateAsync(DbFileMeta meta)
+    public async Task<DbFileMeta> CreateAsync(DbFileMeta meta)
     {
-        var cmd = await CreateCommandAsync("INSERT INTO file_meta (size, name) VALUES (@size, @name) RETURNING *;");
+        var cmd = _dataSource.CreateCommand("INSERT INTO file_meta (size, name) VALUES (@size, @name) RETURNING *;");
         
         cmd.Parameters.AddWithValue("size", meta.Size);
         cmd.Parameters.AddWithValue("name", meta.Name);
@@ -140,9 +145,9 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaReposit
         return meta;
     }*/
 
-    public override async Task<List<DbFileMeta>> GetAllAsync()
+    public async Task<List<DbFileMeta>> GetAllAsync()
     {
-        var cmd = await CreateCommandAsync("SELECT * FROM file_meta");
+        var cmd = _dataSource.CreateCommand("SELECT * FROM file_meta");
         await using var reader = await cmd.ExecuteReaderAsync();
 
         var meta = new List<DbFileMeta>();
