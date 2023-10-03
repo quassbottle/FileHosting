@@ -3,24 +3,17 @@ using FileHosting.Domain.Entities;
 using FileHosting.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 var connectionString = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString")!;
 
-var test = new FileMetaRepository(connectionString);
-
-Console.WriteLine(test.UpdateAsync(new FileMeta
-{
-    Size = 100,
-    Name = "fff"
-},Guid.Parse("3a02b2da-5648-4440-b3a9-e305d1fc641f")).Result.Guid);
-
-return;
+// Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<NpgsqlRepository<DbFileMeta>>(repo =>
+    ActivatorUtilities.CreateInstance<FileMetaRepository>(repo, connectionString));
 
 var app = builder.Build();
 

@@ -1,8 +1,8 @@
 ﻿namespace FileHosting.Domain.Entities;
 
-public class FileData
+public class DbFileData
 {
     public Guid Guid { get; set; }
     public byte[] Data { get; set; }
-    public FileMeta meta;
+    public Guid FileMetaId { get; set; }
 }

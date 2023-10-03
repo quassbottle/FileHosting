@@ -1,3 +1,5 @@
+using FileHosting.DataAccess.Repositories;
+using FileHosting.Domain.Entities;
 using FileHosting.Extensions;
 using FileHosting.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +10,13 @@ namespace FileHosting.Controllers;
 [Route("")]
 public class WeatherForecastController : ControllerBase
 {
+    private readonly NpgsqlRepository<DbFileMeta> _repository;
+    
+    public WeatherForecastController(NpgsqlRepository<DbFileMeta> repository)
+    {
+        _repository = repository;
+    }
+    
     [HttpGet]
     public async Task Get()
     {
