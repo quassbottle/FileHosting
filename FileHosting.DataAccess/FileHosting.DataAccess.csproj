@@ -6,4 +6,16 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+
+    <ItemGroup>
+      <PackageReference Include="Npgsql" Version="7.0.6" />
+    </ItemGroup>
+
+
+    <ItemGroup>
+      <ProjectReference Include="..\FileHosting.Domain\FileHosting.Domain.csproj" />
+    </ItemGroup>
+
+
+
 </Project>

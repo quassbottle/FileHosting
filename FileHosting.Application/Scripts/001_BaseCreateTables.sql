@@ -1,9 +1,10 @@
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+﻿CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE IF NOT EXISTS file_meta (
     id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
     size bigint,
-    name text
+    name text,
+    data_id uuid references file_data(id)
 );
 
 CREATE TABLE IF NOT EXISTS file_data (
@@ -14,5 +15,5 @@ CREATE TABLE IF NOT EXISTS file_data (
 
 CREATE TABLE IF NOT EXISTS file_url (
     id uuid  NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
-    file_id uuid REFERENCES file_data(id) ON DELETE CASCADE
+    meta_id uuid REFERENCES file_meta(id) ON DELETE CASCADE
 );
