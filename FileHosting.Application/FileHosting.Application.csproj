@@ -22,4 +22,8 @@
       <EmbeddedResource Include="Scripts\001_BaseCreateTables.sql" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\FileHosting.DataAccess\FileHosting.DataAccess.csproj" />
+    </ItemGroup>
+
 </Project>
