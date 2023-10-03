@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS file_meta (
     id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
     size bigint,
     name text,
-    type varchar(24),
-    data_id uuid references file_data(id)
+    type varchar(24)
 );
 
 CREATE TABLE IF NOT EXISTS file_data (

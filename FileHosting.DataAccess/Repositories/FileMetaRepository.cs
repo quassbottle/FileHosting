@@ -16,12 +16,11 @@ public class FileMetaRepository : IFileMetaRepository
 
     public async Task<DbFileMeta> UpdateAsync(DbFileMeta meta, Guid id)
     {
-        var cmd = _dataSource.CreateCommand("UPDATE file_meta SET size = @size, name = @name, data_id = @data_id WHERE id = @id RETURNING *;");
+        var cmd = _dataSource.CreateCommand("UPDATE file_meta SET size = @size, name = @name, type = @type WHERE id = @id RETURNING *;");
 
-        cmd.Parameters.AddWithValue("id", id);
         cmd.Parameters.AddWithValue("size", meta.Size);
         cmd.Parameters.AddWithValue("name", meta.Name);   
-        cmd.Parameters.AddWithValue("data_id", meta.Id);   
+        cmd.Parameters.AddWithValue("type", meta.Type);   
         
         await using var reader = await cmd.ExecuteReaderAsync();
         
@@ -29,17 +28,15 @@ public class FileMetaRepository : IFileMetaRepository
         var guid = reader.GetFieldValueAsync<Guid>(0);
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
-        var dataId = reader.GetFieldValueAsync<Guid>(3);
-        var type = reader.GetFieldValueAsync<string>(4);
+        var type = reader.GetFieldValueAsync<string>(3);
         
-        Task.WaitAll(guid, size, name, dataId);
+        Task.WaitAll(guid, size, name, type);
         
         return new DbFileMeta
         {
             Id = guid.Result,
             Name = name.Result,
             Size = size.Result,
-            FileDataId = dataId.Result,
             Type = type.Result
         };
     }
@@ -62,27 +59,26 @@ public class FileMetaRepository : IFileMetaRepository
         var guid = reader.GetFieldValueAsync<Guid>(0);
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
-        var dataId = reader.GetFieldValueAsync<Guid>(3);
-        var type = reader.GetFieldValueAsync<string>(4);
+        var type = reader.GetFieldValueAsync<string>(3);
         
-        Task.WaitAll(guid, size, name, dataId);
+        Task.WaitAll(guid, size, name, type);
         
         return new DbFileMeta
         {
             Id = guid.Result,
             Name = name.Result,
             Size = size.Result,
-            FileDataId = dataId.Result,
             Type = type.Result
         };
     }
 
     public async Task<DbFileMeta> CreateAsync(DbFileMeta meta)
     {
-        var cmd = _dataSource.CreateCommand("INSERT INTO file_meta (size, name) VALUES (@size, @name) RETURNING *;");
+        var cmd = _dataSource.CreateCommand("INSERT INTO file_meta (size, name, type) VALUES (@size, @name, @type) RETURNING *;");
         
         cmd.Parameters.AddWithValue("size", meta.Size);
         cmd.Parameters.AddWithValue("name", meta.Name);
+        cmd.Parameters.AddWithValue("type", meta.Type);
         
         await using var reader = await cmd.ExecuteReaderAsync();
         
@@ -90,17 +86,15 @@ public class FileMetaRepository : IFileMetaRepository
         var guid = reader.GetFieldValueAsync<Guid>(0);
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
-        var dataId = reader.GetFieldValueAsync<Guid>(3);
-        var type = reader.GetFieldValueAsync<string>(4);
+        var type = reader.GetFieldValueAsync<string>(3);
         
-        Task.WaitAll(guid, size, name, dataId);
+        Task.WaitAll(guid, size, name, type);
         
         return new DbFileMeta
         {
             Id = guid.Result,
             Name = name.Result,
             Size = size.Result,
-            FileDataId = dataId.Result,
             Type = type.Result
         };
     }
@@ -157,17 +151,15 @@ public class FileMetaRepository : IFileMetaRepository
             var guid = reader.GetFieldValueAsync<Guid>(0);
             var size = reader.GetFieldValueAsync<long>(1);
             var name = reader.GetFieldValueAsync<string>(2);
-            var dataId = reader.GetFieldValueAsync<Guid>(3);
-            var type = reader.GetFieldValueAsync<string>(4);
+            var type = reader.GetFieldValueAsync<string>(3);
         
-            Task.WaitAll(guid, size, name, dataId, type);
+            Task.WaitAll(guid, size, name, type);
         
             meta.Add(new DbFileMeta
             {
                 Id = guid.Result,
                 Name = name.Result,
                 Size = size.Result,
-                FileDataId = dataId.Result,
                 Type = type.Result
             });
         }

@@ -1,7 +1,6 @@
 using FileHosting.DataAccess.Repositories;
 using FileHosting.Domain.Entities;
 using FileHosting.Domain.Services;
-using FileHosting.Domain.Services.Interfaces;
 using FileHosting.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

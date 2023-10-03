@@ -1,6 +1,6 @@
-﻿using FileHosting.DataAccess.Repositories;
+﻿using FileHosting.DataAccess.Providers;
+using FileHosting.DataAccess.Repositories;
 using FileHosting.DataAccess.Repositories.Interfaces;
-using FileHosting.Domain.Entities;
 using FileHosting.Domain.Services;
 using FileHosting.Domain.Services.Interfaces;
 
@@ -11,18 +11,20 @@ public static class BuilderDiExtensions
     public static void LoadDependencies(this WebApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetValue<string>("DatabaseSettings:ConnectionString")!;
-
-        LoadRepositories(builder, connectionString);
+        
+        // database provider
+        builder.Services.AddScoped<NpgsqlDataSourceProvider>(provider =>
+            ActivatorUtilities.CreateInstance<NpgsqlDataSourceProvider>(provider, connectionString));
+        
+        LoadRepositories(builder);
         LoadServices(builder);
     }
 
-    private static void LoadRepositories(WebApplicationBuilder builder, string connectionString)
+    private static void LoadRepositories(WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<NpgsqlRepository<DbFileMeta>>(repo =>
-            ActivatorUtilities.CreateInstance<FileMetaRepository>(repo, connectionString));
-        
-        builder.Services.AddScoped<IFileDataRepository>(repo =>
-            ActivatorUtilities.CreateInstance<FileDataRepository>(repo, connectionString));
+        builder.Services.AddScoped<IFileDataRepository, FileDataRepository>();
+        builder.Services.AddScoped<IFileMetaRepository, FileMetaRepository>();
+        builder.Services.AddScoped<IFileUrlRepository, FileUrlRepository>();
     }
 
     private static void LoadServices(WebApplicationBuilder builder)

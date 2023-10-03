@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FileHosting.DataAccess\FileHosting.DataAccess.csproj" />
+      <ProjectReference Include="..\FileHosting.Domain.Services\FileHosting.Domain.Services.csproj" />
     </ItemGroup>
 
 </Project>
