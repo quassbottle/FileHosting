@@ -8,9 +8,18 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="Scripts\001_CreateTable_FileMeta.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
         <PackageReference Include="dbup-postgresql" Version="5.0.8" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.3" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Scripts\001_BaseCreateTables.sql" />
+      <EmbeddedResource Include="Scripts\001_BaseCreateTables.sql" />
     </ItemGroup>
 
 </Project>

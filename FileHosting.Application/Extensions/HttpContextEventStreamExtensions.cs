@@ -3,7 +3,9 @@ using FileHosting.Models;
 
 namespace FileHosting.Extensions;
 
-public static class HttpContextEventStreamExtensions
+
+//  Using Server Sent Events for current state streaming https://learn.javascript.ru/server-sent-events
+public static class HttpContextEventStreamExtensions 
 {
     public static async Task InitSseStreamAsync(this HttpContext ctx)
     {

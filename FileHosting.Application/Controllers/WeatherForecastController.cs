@@ -12,7 +12,8 @@ public class WeatherForecastController : ControllerBase
     public async Task Get()
     {
         await HttpContext.InitSseStreamAsync();
-        while (true)
+        int i = 5;
+        while (i-- > 0)
         {
             await HttpContext.SendSseEventAsync(
                 new SseEvent("test event", new { Penis = "penis", Balls = "balls" })
@@ -21,6 +22,7 @@ public class WeatherForecastController : ControllerBase
                     Retry = 10
                 });
             await Task.Delay(500);
+            i--;
         }
     }
 }
