@@ -3,7 +3,8 @@
 CREATE TABLE IF NOT EXISTS file_meta (
     id uuid NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
     size bigint,
-    name text
+    name text,
+    data_id uuid references file_data(id)
 );
 
 CREATE TABLE IF NOT EXISTS file_data (

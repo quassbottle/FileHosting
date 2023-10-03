@@ -2,6 +2,6 @@
 
 public class DbFileUrl
 {
-    public Guid Guid { get; set; }
+    public Guid Id { get; set; }
     public Guid FileMetaId { get; set; }
 }

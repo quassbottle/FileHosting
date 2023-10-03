@@ -27,7 +27,7 @@ public class FileDataRepository : NpgsqlRepository<DbFileData>
         
         return new DbFileData()
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             FileMetaId = metaId.Result,
             Data = fileData.Result
         };
@@ -56,7 +56,7 @@ public class FileDataRepository : NpgsqlRepository<DbFileData>
         
         return new DbFileData()
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             FileMetaId = metaId.Result,
             Data = fileData.Result
         };
@@ -80,7 +80,7 @@ public class FileDataRepository : NpgsqlRepository<DbFileData>
         
         return new DbFileData()
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             FileMetaId = metaId.Result,
             Data = fileData.Result
         };
@@ -103,7 +103,7 @@ public class FileDataRepository : NpgsqlRepository<DbFileData>
         
             files.Add(new DbFileData
             {
-                Guid = guid.Result,
+                Id = guid.Result,
                 FileMetaId = metaId.Result,
                 Data = fileData.Result
             });

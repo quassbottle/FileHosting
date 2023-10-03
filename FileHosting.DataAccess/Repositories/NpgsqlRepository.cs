@@ -1,8 +1,9 @@
-﻿using Npgsql;
+﻿using FileHosting.DataAccess.Repositories.Interfaces;
+using Npgsql;
 
 namespace FileHosting.DataAccess.Repositories;
 
-public abstract class NpgsqlRepository<T> : IDisposable, IAsyncDisposable
+public abstract class NpgsqlRepository<T> : IDisposable, IAsyncDisposable, IBaseRepository<T>
 {
     private readonly NpgsqlDataSource _dataSource;
     
@@ -16,6 +17,7 @@ public abstract class NpgsqlRepository<T> : IDisposable, IAsyncDisposable
         return await Task.FromResult(_dataSource.CreateCommand(query));
     }
 
+    // todo: perhaps I will make these methods virtual, will use reflection for base implementation, also table name as a param for the constructor
     public abstract Task<T> UpdateAsync(T t, Guid id);
     public abstract Task<int> DeleteByGuid(Guid id);
     public abstract Task<T> FindByGuidAsync(Guid id);

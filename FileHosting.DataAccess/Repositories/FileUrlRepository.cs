@@ -24,7 +24,7 @@ public class FileUrlRepository : NpgsqlRepository<DbFileUrl>
         
         return new DbFileUrl()
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             FileMetaId = metaId.Result
         };
     }
@@ -51,7 +51,7 @@ public class FileUrlRepository : NpgsqlRepository<DbFileUrl>
         
         return new DbFileUrl()
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             FileMetaId = metaId.Result
         };
     }
@@ -73,7 +73,7 @@ public class FileUrlRepository : NpgsqlRepository<DbFileUrl>
 
         return new DbFileUrl()
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             FileMetaId = metaId.Result
         };
     }
@@ -94,7 +94,7 @@ public class FileUrlRepository : NpgsqlRepository<DbFileUrl>
         
             urls.Add(new DbFileUrl()
             {
-                Guid = guid.Result,
+                Id = guid.Result,
                 FileMetaId = metaId.Result
             });
         }

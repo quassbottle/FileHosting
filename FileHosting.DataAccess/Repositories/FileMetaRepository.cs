@@ -1,8 +1,9 @@
-﻿using FileHosting.Domain.Entities;
+﻿using FileHosting.DataAccess.Repositories.Interfaces;
+using FileHosting.Domain.Entities;
 
 namespace FileHosting.DataAccess.Repositories;
 
-public class FileMetaRepository : NpgsqlRepository<DbFileMeta>
+public class FileMetaRepository : NpgsqlRepository<DbFileMeta>, IFileMetaRepository
 {
     public FileMetaRepository(string connectionString) : base(connectionString)
     {
@@ -10,11 +11,12 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>
 
     public override async Task<DbFileMeta> UpdateAsync(DbFileMeta meta, Guid id)
     {
-        var cmd = await CreateCommandAsync("UPDATE file_meta SET size = @size, name = @name WHERE id = @id RETURNING *;");
+        var cmd = await CreateCommandAsync("UPDATE file_meta SET size = @size, name = @name, data_id = @data_id WHERE id = @id RETURNING *;");
 
         cmd.Parameters.AddWithValue("id", id);
         cmd.Parameters.AddWithValue("size", meta.Size);
         cmd.Parameters.AddWithValue("name", meta.Name);   
+        cmd.Parameters.AddWithValue("data_id", meta.Id);   
         
         await using var reader = await cmd.ExecuteReaderAsync();
         
@@ -22,14 +24,16 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>
         var guid = reader.GetFieldValueAsync<Guid>(0);
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
+        var dataId = reader.GetFieldValueAsync<Guid>(3);
         
-        Task.WaitAll(guid, size, name);
+        Task.WaitAll(guid, size, name, dataId);
         
         return new DbFileMeta
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             Name = name.Result,
-            Size = size.Result
+            Size = size.Result,
+            FileDataId = dataId.Result
         };
     }
 
@@ -51,14 +55,16 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>
         var guid = reader.GetFieldValueAsync<Guid>(0);
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
+        var dataId = reader.GetFieldValueAsync<Guid>(3);
         
-        Task.WaitAll(guid, size, name);
+        Task.WaitAll(guid, size, name, dataId);
         
         return new DbFileMeta
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             Name = name.Result,
-            Size = size.Result
+            Size = size.Result,
+            FileDataId = dataId.Result
         };
     }
 
@@ -75,14 +81,16 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>
         var guid = reader.GetFieldValueAsync<Guid>(0);
         var size = reader.GetFieldValueAsync<long>(1);
         var name = reader.GetFieldValueAsync<string>(2);
+        var dataId = reader.GetFieldValueAsync<Guid>(3);
         
-        Task.WaitAll(guid, size, name);
+        Task.WaitAll(guid, size, name, dataId);
         
         return new DbFileMeta
         {
-            Guid = guid.Result,
+            Id = guid.Result,
             Name = name.Result,
-            Size = size.Result
+            Size = size.Result,
+            FileDataId = dataId.Result
         };
     }
     
@@ -134,18 +142,20 @@ public class FileMetaRepository : NpgsqlRepository<DbFileMeta>
         var meta = new List<DbFileMeta>();
 
         while (await reader.ReadAsync())
-        {
+        {;
             var guid = reader.GetFieldValueAsync<Guid>(0);
             var size = reader.GetFieldValueAsync<long>(1);
             var name = reader.GetFieldValueAsync<string>(2);
-            
-            Task.WaitAll(guid, size, name);
-            
+            var dataId = reader.GetFieldValueAsync<Guid>(3);
+        
+            Task.WaitAll(guid, size, name, dataId);
+        
             meta.Add(new DbFileMeta
             {
-                Guid = guid.Result,
+                Id = guid.Result,
                 Name = name.Result,
-                Size = size.Result
+                Size = size.Result,
+                FileDataId = dataId.Result
             });
         }
 

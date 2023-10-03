@@ -4,7 +4,8 @@ namespace FileHosting.Domain.Entities;
 
 public class DbFileMeta
 {
-    public Guid Guid { get; set; }
+    public Guid Id { get; set; }
     public long Size { get; set; }
     public string Name { get; set; } = string.Empty;
+    public Guid FileDataId { get; set; }
 }
