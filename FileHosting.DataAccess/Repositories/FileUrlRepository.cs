@@ -1,4 +1,5 @@
-﻿using FileHosting.DataAccess.Providers;
+﻿using System.Data;
+using FileHosting.DataAccess.Providers;
 using FileHosting.DataAccess.Repositories.Interfaces;
 using FileHosting.Domain.Entities;
 using Npgsql;
@@ -23,8 +24,8 @@ public class FileUrlRepository : IFileUrlRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var metaId = reader.GetFieldValueAsync<Guid>(1);
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
         
         Task.WaitAll(guid, metaId);
         
@@ -50,8 +51,8 @@ public class FileUrlRepository : IFileUrlRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var metaId = reader.GetFieldValueAsync<Guid>(1);
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
         
         Task.WaitAll(guid, metaId);
         
@@ -72,8 +73,8 @@ public class FileUrlRepository : IFileUrlRepository
         await using var reader = await cmd.ExecuteReaderAsync();
 
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var metaId = reader.GetFieldValueAsync<Guid>(1);
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
 
         Task.WaitAll(guid, metaId);
 
@@ -93,8 +94,8 @@ public class FileUrlRepository : IFileUrlRepository
 
         while (await reader.ReadAsync())
         {
-            var guid = reader.GetFieldValueAsync<Guid>(0);
-            var metaId = reader.GetFieldValueAsync<Guid>(1);
+            var guid = reader.GetFieldValueAsync<Guid>("id");
+            var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
         
             Task.WaitAll(guid, metaId);
         

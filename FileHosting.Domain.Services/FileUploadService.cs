@@ -18,7 +18,7 @@ public class FileUploadService : IFileUploadService
         _fileDataRepository = fileDataRepository;
     }
     
-    public async Task<FileMeta> UploadFile(FullFileDto fileDto)
+    public async Task<FileUploadedDto> UploadFile(FullFileDto fileDto)
     {
         var dbFileMeta = await _fileMetaRepository.CreateAsync(new DbFileMeta
         {
@@ -28,15 +28,20 @@ public class FileUploadService : IFileUploadService
         });
         var dbFileData = await _fileDataRepository.CreateAsync(new DbFileData
         {
-            FileMetaId = dbFileMeta.FileDataId,
+            FileMetaId = dbFileMeta.Id,
             Data = fileDto.Content
         });
-        dbFileMeta.FileDataId = dbFileData.Id;
-        dbFileMeta = await _fileMetaRepository.UpdateAsync(dbFileMeta, dbFileMeta.Id);
-        
-        var fileMetaDto = new FileMeta
+
+        var result = await _fileMetaRepository.GetFileDataAndMetaJoinById(dbFileData.Id);
+
+        return new FileUploadedDto
         {
-            
-        }
+            Name = result.Name,
+            FileType = result.Type,
+            Id = result.Id,
+            Data = result.Data,
+            DataId = result.DataId,
+            SizeInBytes = result.Size
+        };
     }
 }

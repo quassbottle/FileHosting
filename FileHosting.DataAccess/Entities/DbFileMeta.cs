@@ -8,5 +8,4 @@ public class DbFileMeta
     public long Size { get; set; }
     public string Name { get; set; }
     public string Type { get; set; }
-    public Guid FileDataId { get; set; }
 }

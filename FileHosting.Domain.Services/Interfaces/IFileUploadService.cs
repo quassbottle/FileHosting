@@ -5,5 +5,5 @@ namespace FileHosting.Domain.Services.Interfaces;
 
 public interface IFileUploadService
 {
-    Task<FileMeta> UploadFile(FullFileDto fileDto);
+    Task<FileUploadedDto> UploadFile(FullFileDto fileDto);
 }

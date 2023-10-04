@@ -3,5 +3,5 @@
 public class FileUrl
 {
     public Guid Id { get; set; }
-    public FileMeta FileMeta { get; set; }
+    public FileUploadedDto FileUploadedDto { get; set; }
 }

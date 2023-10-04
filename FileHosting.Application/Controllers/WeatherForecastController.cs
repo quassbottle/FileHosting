@@ -1,6 +1,7 @@
 using FileHosting.DataAccess.Repositories;
 using FileHosting.Domain.Dto;
 using FileHosting.Domain.Entities;
+using FileHosting.Domain.Models;
 using FileHosting.Domain.Services.Interfaces;
 using FileHosting.Extensions;
 using FileHosting.Models;
@@ -38,7 +39,7 @@ public class WeatherForecastController : ControllerBase
     }
 
     [HttpPost]
-    public async Task UploadFile(IFormFile formFile)
+    public async Task<FileUploadedDto> UploadFile(IFormFile formFile)
     {
         using var memoryStream = new MemoryStream();
         await formFile.CopyToAsync(memoryStream);
@@ -50,5 +51,7 @@ public class WeatherForecastController : ControllerBase
             SizeInBytes = formFile.Length,
             Content = memoryStream.ToArray()
         };
+
+        return await _fileUploadService.UploadFile(fileDto);
     }
 }

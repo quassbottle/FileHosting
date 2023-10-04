@@ -1,4 +1,5 @@
-﻿using FileHosting.DataAccess.Providers;
+﻿using System.Data;
+using FileHosting.DataAccess.Providers;
 using FileHosting.DataAccess.Repositories.Interfaces;
 using FileHosting.Domain.Entities;
 using Npgsql;
@@ -25,9 +26,9 @@ public class FileDataRepository : IFileDataRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var fileData = reader.GetFieldValueAsync<byte[]>(1);
-        var metaId = reader.GetFieldValueAsync<Guid>(2);
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var fileData = reader.GetFieldValueAsync<byte[]>("data");
+        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
         
         Task.WaitAll(guid, fileData, metaId);
         
@@ -54,9 +55,9 @@ public class FileDataRepository : IFileDataRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var fileData = reader.GetFieldValueAsync<byte[]>(1);
-        var metaId = reader.GetFieldValueAsync<Guid>(2);
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var fileData = reader.GetFieldValueAsync<byte[]>("data");
+        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
         
         Task.WaitAll(guid, fileData, metaId);
         
@@ -78,9 +79,9 @@ public class FileDataRepository : IFileDataRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var fileData = reader.GetFieldValueAsync<byte[]>(1);
-        var metaId = reader.GetFieldValueAsync<Guid>(2);
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var fileData = reader.GetFieldValueAsync<byte[]>("data");
+        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
         
         Task.WaitAll(guid, fileData, metaId);
         
@@ -101,9 +102,9 @@ public class FileDataRepository : IFileDataRepository
 
         while (await reader.ReadAsync())
         {
-            var guid = reader.GetFieldValueAsync<Guid>(0);
-            var fileData = reader.GetFieldValueAsync<byte[]>(1);
-            var metaId = reader.GetFieldValueAsync<Guid>(2);
+            var guid = reader.GetFieldValueAsync<Guid>("id");
+            var fileData = reader.GetFieldValueAsync<byte[]>("data");
+            var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
         
             Task.WaitAll(guid, fileData, metaId);
         

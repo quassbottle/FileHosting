@@ -1,4 +1,5 @@
-﻿using FileHosting.DataAccess.Providers;
+﻿using System.Data;
+using FileHosting.DataAccess.Providers;
 using FileHosting.DataAccess.Repositories.Interfaces;
 using FileHosting.Domain.Entities;
 using Npgsql;
@@ -25,10 +26,10 @@ public class FileMetaRepository : IFileMetaRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var size = reader.GetFieldValueAsync<long>(1);
-        var name = reader.GetFieldValueAsync<string>(2);
-        var type = reader.GetFieldValueAsync<string>(3);
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var size = reader.GetFieldValueAsync<long>("size");
+        var name = reader.GetFieldValueAsync<string>("name");
+        var type = reader.GetFieldValueAsync<string>("type");
         
         Task.WaitAll(guid, size, name, type);
         
@@ -56,10 +57,10 @@ public class FileMetaRepository : IFileMetaRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var size = reader.GetFieldValueAsync<long>(1);
-        var name = reader.GetFieldValueAsync<string>(2);
-        var type = reader.GetFieldValueAsync<string>(3);
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var size = reader.GetFieldValueAsync<long>("size");
+        var name = reader.GetFieldValueAsync<string>("name");
+        var type = reader.GetFieldValueAsync<string>("type");
         
         Task.WaitAll(guid, size, name, type);
         
@@ -83,10 +84,11 @@ public class FileMetaRepository : IFileMetaRepository
         await using var reader = await cmd.ExecuteReaderAsync();
         
         await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>(0);
-        var size = reader.GetFieldValueAsync<long>(1);
-        var name = reader.GetFieldValueAsync<string>(2);
-        var type = reader.GetFieldValueAsync<string>(3);
+        
+        var guid = reader.GetFieldValueAsync<Guid>("id");
+        var size = reader.GetFieldValueAsync<long>("size");
+        var name = reader.GetFieldValueAsync<string>("name");
+        var type = reader.GetFieldValueAsync<string>("type");
         
         Task.WaitAll(guid, size, name, type);
         
@@ -148,10 +150,10 @@ public class FileMetaRepository : IFileMetaRepository
 
         while (await reader.ReadAsync())
         {
-            var guid = reader.GetFieldValueAsync<Guid>(0);
-            var size = reader.GetFieldValueAsync<long>(1);
-            var name = reader.GetFieldValueAsync<string>(2);
-            var type = reader.GetFieldValueAsync<string>(3);
+            var guid = reader.GetFieldValueAsync<Guid>("id");
+            var size = reader.GetFieldValueAsync<long>("size");
+            var name = reader.GetFieldValueAsync<string>("name");
+            var type = reader.GetFieldValueAsync<string>("type");
         
             Task.WaitAll(guid, size, name, type);
         
@@ -165,5 +167,31 @@ public class FileMetaRepository : IFileMetaRepository
         }
 
         return meta;
+    }
+
+    public async Task<DbFileDataMetaJoin> GetFileDataAndMetaJoinById(Guid metaId)
+    {
+        var cmd = _dataSource.CreateCommand("SELECT file_meta.*, file_data.data, file_data.id AS data_id FROM file_meta JOIN file_data ON file_meta.id = file_data.meta_id WHERE file_meta.id = @id;");
+        cmd.Parameters.AddWithValue("id", metaId);
+        await using var reader = await cmd.ExecuteReaderAsync();
+        
+        var id = reader.GetFieldValueAsync<Guid>("id");
+        var size = reader.GetFieldValueAsync<long>("size");
+        var name = reader.GetFieldValueAsync<string>("name");
+        var type = reader.GetFieldValueAsync<string>("type");
+        var data = reader.GetFieldValueAsync<byte[]>("data");
+        var dataId = reader.GetFieldValueAsync<Guid>("data_id");
+        
+        Task.WaitAll(id, size, name, type, data, dataId);
+
+        return new DbFileDataMetaJoin
+        {
+            Id = id.Result,
+            Size = size.Result,
+            Name = name.Result,
+            Type = type.Result,
+            Data = data.Result,
+            DataId = dataId.Result
+        };
     }
 }
