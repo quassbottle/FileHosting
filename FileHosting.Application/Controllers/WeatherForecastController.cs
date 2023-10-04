@@ -1,5 +1,7 @@
 using FileHosting.DataAccess.Repositories;
-using FileHosting.Domain.Entities;
+using FileHosting.Domain.Dto;
+using FileHosting.Domain.Models;
+using FileHosting.Domain.Services.Interfaces;
 using FileHosting.Extensions;
 using FileHosting.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -7,14 +9,14 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileHosting.Controllers;
 
 [ApiController]
-[Route("")]
+[Route("aaa")]
 public class WeatherForecastController : ControllerBase
 {
-    private readonly NpgsqlRepository<DbFileMeta> _repository;
+    private readonly IFileUploadService _fileUploadService;
     
-    public WeatherForecastController(NpgsqlRepository<DbFileMeta> repository)
+    public WeatherForecastController(IFileUploadService fileUploadService)
     {
-        _repository = repository;
+        _fileUploadService = fileUploadService;
     }
     
     [HttpGet]
@@ -34,4 +36,5 @@ public class WeatherForecastController : ControllerBase
             i--;
         }
     }
+
 }
