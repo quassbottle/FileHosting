@@ -38,11 +38,36 @@ public class FileUploadService : IFileUploadService
             Type = file.Type
         };
     }
-    
-    private async Task GenerateUrl(Guid id)
+
+    public async Task<DownloadFileDto> DownloadFileByUrl(Guid urlId)
     {
-        
-        
+        var dbUrl = await _fileUrlRepository.FindByGuidAsync(urlId);
+        var dbFileNameDataType = await _fileUrlRepository.GetFileNameDataTypeJoin(dbUrl.Id);
+        var dto = new DownloadFileDto
+        {
+            Data = dbFileNameDataType.Data,
+            Name = dbFileNameDataType.Name,
+            Type = dbFileNameDataType.Type
+        };
+        await _fileUrlRepository.DeleteByGuid(urlId);
+        return dto;
+    }
+    
+    public async Task<FileUrlDto> GenerateUrl(Guid fileId)
+    {
+        var dbUrl = await _fileUrlRepository.CreateAsync(new DbFileUrl
+        {
+            FileDataId = fileId
+        });
+        var dbFileNameDataType = await _fileUrlRepository.GetFileNameDataTypeJoin(dbUrl.Id);
+
+        return new FileUrlDto
+        {
+            Id = dbUrl.Id,
+            Name = dbFileNameDataType.Name,
+            SizeInBytes = dbFileNameDataType.Data.Length,
+            Type = dbFileNameDataType.Type
+        };
     }
     
     public async Task<FileUploadedDto> UploadFile(FileModel fileModel)
@@ -56,7 +81,7 @@ public class FileUploadService : IFileUploadService
         var dbFileData = await _fileDataRepository.CreateAsync(new DbFileData
         {
             FileMetaId = dbFileMeta.Id,
-            Data = fileModel.Content
+            Data = fileModel.Data
         });
 
         var result = await _fileMetaRepository.GetFileDataAndMetaJoinById(dbFileMeta.Id);
@@ -66,7 +91,8 @@ public class FileUploadService : IFileUploadService
             Name = fileModel.Name,
             FileType = fileModel.Type,
             SizeInBytes = fileModel.SizeInBytes,
-            IsUploaded = result != null
+            IsUploaded = result != null,
+            Id = result?.Id ?? Guid.Empty
         };
     }
 }
