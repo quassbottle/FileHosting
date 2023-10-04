@@ -19,10 +19,33 @@ public class FileController : Controller
         _fileUploadService = fileUploadService;
     }
     
-    [HttpPost]
+    [HttpPost("uploadMany")]
+    public async Task<ActionResult<List<FileUploadedDto>>> LoadManyFiles(IFormFileCollection formFiles)
+    {
+        var uploadedFiles = new List<FileUploadedDto>();
+        foreach (var formFile in formFiles)
+        {
+            using var memoryStream = new MemoryStream();
+            await formFile.CopyToAsync(memoryStream);
+            var file = new FileModel
+            {
+                Name = formFile.FileName,
+                SizeInBytes = formFile.Length,
+                Type = formFile.ContentType,
+                Content = memoryStream.ToArray()
+            };
+            
+            var fileUploaded = await _fileUploadService.UploadFile(file);
+
+            uploadedFiles.Add(fileUploaded);
+        }
+
+        return Ok(uploadedFiles);
+    }
+    
+    [HttpPost("upload")]
     public async Task<ActionResult<FileUploadedDto>> UploadFile(IFormFile formFile)
     {
-        if (formFile.Length == 0) return BadRequest("File is empty");
         using var memoryStream = new MemoryStream();
         await formFile.CopyToAsync(memoryStream);
         

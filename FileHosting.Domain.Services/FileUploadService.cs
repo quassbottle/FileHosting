@@ -47,7 +47,6 @@ public class FileUploadService : IFileUploadService
     
     public async Task<FileUploadedDto> UploadFile(FileModel fileModel)
     {
-        var t = await _fileUrlRepository.FindByGuidAsync(Guid.NewGuid());
         var dbFileMeta = await _fileMetaRepository.CreateAsync(new DbFileMeta
         {
             Name = fileModel.Name,
@@ -64,10 +63,10 @@ public class FileUploadService : IFileUploadService
 
         return new FileUploadedDto
         {
-            Name = result.Name,
-            FileType = result.Type,
-            Id = result.Id,
-            SizeInBytes = result.Size
+            Name = fileModel.Name,
+            FileType = fileModel.Type,
+            SizeInBytes = fileModel.SizeInBytes,
+            IsUploaded = result != null
         };
     }
 }
