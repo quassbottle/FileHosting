@@ -1,4 +1,4 @@
-﻿namespace FileHosting.Domain.Entities;
+﻿namespace FileHosting.DataAccess.Entities;
 
 public class DbFileDataMetaJoin : DbFileMeta
 {

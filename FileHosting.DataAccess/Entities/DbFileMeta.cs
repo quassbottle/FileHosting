@@ -1,6 +1,4 @@
-﻿using FileHosting.Domain.Attributes;
-
-namespace FileHosting.Domain.Entities;
+﻿namespace FileHosting.DataAccess.Entities;
 
 public class DbFileMeta
 {

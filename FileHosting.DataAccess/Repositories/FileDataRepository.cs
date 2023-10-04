@@ -1,7 +1,7 @@
 ﻿using System.Data;
+using FileHosting.DataAccess.Entities;
 using FileHosting.DataAccess.Providers;
 using FileHosting.DataAccess.Repositories.Interfaces;
-using FileHosting.Domain.Entities;
 using Npgsql;
 using NpgsqlTypes;
 

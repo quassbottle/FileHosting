@@ -1,4 +1,4 @@
-﻿using FileHosting.Domain.Entities;
+﻿using FileHosting.DataAccess.Entities;
 
 namespace FileHosting.DataAccess.Repositories.Interfaces;
 

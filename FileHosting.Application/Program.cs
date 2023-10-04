@@ -1,5 +1,4 @@
 using FileHosting.DataAccess.Repositories;
-using FileHosting.Domain.Entities;
 using FileHosting.Domain.Services;
 using FileHosting.Extensions;
 
