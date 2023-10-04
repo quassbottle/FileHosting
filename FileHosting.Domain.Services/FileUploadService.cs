@@ -32,14 +32,13 @@ public class FileUploadService : IFileUploadService
             Data = fileDto.Content
         });
 
-        var result = await _fileMetaRepository.GetFileDataAndMetaJoinById(dbFileData.Id);
+        var result = await _fileMetaRepository.GetFileDataAndMetaJoinById(dbFileMeta.Id);
 
         return new FileUploadedDto
         {
             Name = result.Name,
             FileType = result.Type,
             Id = result.Id,
-            Data = result.Data,
             DataId = result.DataId,
             SizeInBytes = result.Size
         };
