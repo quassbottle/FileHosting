@@ -112,9 +112,9 @@ public class FileUrlRepository : IFileUrlRepository
         return urls;
     }
 
-    public async Task<DbFileNameDataJoin> GetFileUrlAndDataJoinById(Guid id)
+    public async Task<DbFileNameDataTypeJoin> GetFileNameDataTypeJoin(Guid id)
     { 
-        var cmd = _dataSource.CreateCommand("SELECT fm.name, fd.data FROM file_url fu JOIN file_meta fm ON fu.meta_id = fm.id JOIN file_data fd on fm.id = fd.meta_id WHERE fu.id = @id;");
+        var cmd = _dataSource.CreateCommand("SELECT fm.name, fd.data, fm.type FROM file_url fu JOIN file_meta fm ON fu.meta_id = fm.id JOIN file_data fd on fm.id = fd.meta_id WHERE fu.id = @id;");
         cmd.Parameters.AddWithValue("id", id);
         
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -124,13 +124,15 @@ public class FileUrlRepository : IFileUrlRepository
         
         var name = reader.GetFieldValueAsync<string>("name");
         var data = reader.GetFieldValueAsync<byte[]>("data");
+        var type = reader.GetFieldValueAsync<string>("type");
         
-        Task.WaitAll(name, data);
+        Task.WaitAll(name, data, type);
         
-        return new DbFileNameDataJoin
+        return new DbFileNameDataTypeJoin
         {
             Data = data.Result,
-            Name = name.Result
+            Name = name.Result,
+            Type = type.Result
         };
     }
 }

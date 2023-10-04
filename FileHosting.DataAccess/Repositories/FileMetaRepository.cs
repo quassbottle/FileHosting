@@ -172,9 +172,9 @@ public class FileMetaRepository : IFileMetaRepository
         return meta;
     }
     
-    public async Task<DbFileNameDataJoin> GetFileNameDataJoinById(Guid id)
+    public async Task<DbFileNameDataTypeJoin> GetFileNameDataTypeJoin(Guid id)
     { 
-        var cmd = _dataSource.CreateCommand("SELECT file_meta.name, file_data.data FROM file_meta JOIN file_data ON file_meta.id = file_data.meta_id WHERE file_meta.id = @id;");
+        var cmd = _dataSource.CreateCommand("SELECT file_meta.name, file_data.data, file_meta.type FROM file_meta JOIN file_data ON file_meta.id = file_data.meta_id WHERE file_meta.id = @id;");
         cmd.Parameters.AddWithValue("id", id);
         
         await using var reader = await cmd.ExecuteReaderAsync();
@@ -184,13 +184,15 @@ public class FileMetaRepository : IFileMetaRepository
         
         var name = reader.GetFieldValueAsync<string>("name");
         var data = reader.GetFieldValueAsync<byte[]>("data");
+        var type = reader.GetFieldValueAsync<string>("type");
         
-        Task.WaitAll(name, data);
+        Task.WaitAll(name, data, type);
         
-        return new DbFileNameDataJoin
+        return new DbFileNameDataTypeJoin
         {
             Data = data.Result,
-            Name = name.Result
+            Name = name.Result,
+            Type = type.Result
         };
     }
 

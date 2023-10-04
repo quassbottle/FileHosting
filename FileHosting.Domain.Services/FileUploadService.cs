@@ -24,21 +24,19 @@ public class FileUploadService : IFileUploadService
 
     public async Task<DownloadFileDto> DownloadFileById(Guid fileId)
     {
-        var file = await _fileMetaRepository.GetFileNameDataJoinById(fileId);
+        var file = await _fileMetaRepository.GetFileNameDataTypeJoin(fileId);
         if (file is null) throw new FileNotFoundException($"File with UUID {fileId} has not been found");
         return new DownloadFileDto
         {
             Name = file.Name,
-            Data = file.Data
+            Data = file.Data,
+            Type = file.Type
         };
     }
     
-    private async Task GenerateUrl(FileUploadedDto fileDto)
+    private async Task GenerateUrl(Guid id)
     {
-        var url = await _fileUrlRepository.CreateAsync(new DbFileUrl
-        {
-            FileDataId = fileDto.DataId
-        });
+        
         
     }
     
@@ -64,7 +62,6 @@ public class FileUploadService : IFileUploadService
             Name = result.Name,
             FileType = result.Type,
             Id = result.Id,
-            DataId = result.DataId,
             SizeInBytes = result.Size
         };
     }
