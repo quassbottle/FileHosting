@@ -54,7 +54,9 @@ public class FileMetaRepository : IFileMetaRepository
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_meta WHERE id = $1");
         
         cmd.Parameters.AddWithValue(id);
+        
         await using var reader = await cmd.ExecuteReaderAsync();
+        if (!reader.HasRows) return null;
         
         await reader.ReadAsync();
         var guid = reader.GetFieldValueAsync<Guid>("id");
@@ -145,8 +147,9 @@ public class FileMetaRepository : IFileMetaRepository
     {
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_meta");
         await using var reader = await cmd.ExecuteReaderAsync();
-
+        
         var meta = new List<DbFileMeta>();
+        if (!reader.HasRows) return meta;
 
         while (await reader.ReadAsync())
         {
@@ -168,22 +171,47 @@ public class FileMetaRepository : IFileMetaRepository
 
         return meta;
     }
-
-    public async Task<DbFileDataMetaJoin> GetFileDataAndMetaJoinById(Guid metaId)
-    {
-        var cmd = _dataSource.CreateCommand("SELECT file_meta.*, file_data.id AS data_id FROM file_meta JOIN file_data ON file_meta.id = file_data.meta_id WHERE file_meta.id = @id;");
-        cmd.Parameters.AddWithValue("id", metaId);
+    
+    public async Task<DbFileNameDataJoin> GetFileNameDataJoinById(Guid id)
+    { 
+        var cmd = _dataSource.CreateCommand("SELECT file_meta.name, file_data.data FROM file_meta JOIN file_data ON file_meta.id = file_data.meta_id WHERE file_meta.id = @id;");
+        cmd.Parameters.AddWithValue("id", id);
+        
         await using var reader = await cmd.ExecuteReaderAsync();
 
         await reader.ReadAsync();
+        if (!reader.HasRows) return null;
+        
+        var name = reader.GetFieldValueAsync<string>("name");
+        var data = reader.GetFieldValueAsync<byte[]>("data");
+        
+        Task.WaitAll(name, data);
+        
+        return new DbFileNameDataJoin
+        {
+            Data = data.Result,
+            Name = name.Result
+        };
+    }
+
+    public async Task<DbFileDataMetaJoin> GetFileDataAndMetaJoinById(Guid metaId)
+    {
+        var cmd = _dataSource.CreateCommand("SELECT file_meta.*, file_data.id data_id, file_data.data FROM file_meta JOIN file_data ON file_meta.id = file_data.meta_id WHERE file_meta.id = @id;");
+        cmd.Parameters.AddWithValue("id", metaId);
+        
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        await reader.ReadAsync();
+        if (!reader.HasRows) return null;
         
         var id = reader.GetFieldValueAsync<Guid>("id");
         var size = reader.GetFieldValueAsync<long>("size");
         var name = reader.GetFieldValueAsync<string>("name");
         var type = reader.GetFieldValueAsync<string>("type");
         var dataId = reader.GetFieldValueAsync<Guid>("data_id");
+        var data = reader.GetFieldValueAsync<byte[]>("data");
         
-        Task.WaitAll(id, size, name, type, dataId);
+        Task.WaitAll(id, size, name, type, dataId, data);
 
         return new DbFileDataMetaJoin
         {
@@ -191,7 +219,8 @@ public class FileMetaRepository : IFileMetaRepository
             Size = size.Result,
             Name = name.Result,
             Type = type.Result,
-            DataId = dataId.Result
+            DataId = dataId.Result,
+            Data = data.Result
         };
     }
 }

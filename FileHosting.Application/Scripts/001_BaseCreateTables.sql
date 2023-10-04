@@ -16,4 +16,4 @@ CREATE TABLE IF NOT EXISTS file_data (
 CREATE TABLE IF NOT EXISTS file_url (
     id uuid  NOT NULL PRIMARY KEY DEFAULT uuid_generate_v4(),
     meta_id uuid REFERENCES file_meta(id) ON DELETE CASCADE
-);
+); 

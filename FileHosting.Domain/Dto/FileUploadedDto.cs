@@ -1,4 +1,4 @@
-﻿namespace FileHosting.Domain.Models;
+﻿namespace FileHosting.Domain.Dto;
 
 public class FileUploadedDto
 {

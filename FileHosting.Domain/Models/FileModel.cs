@@ -1,6 +1,6 @@
-﻿namespace FileHosting.Domain.Dto;
+﻿namespace FileHosting.Domain.Models;
 
-public class FullFileDto
+public class FileModel
 {
     public string Name { get; set; }
     public long SizeInBytes { get; set; }

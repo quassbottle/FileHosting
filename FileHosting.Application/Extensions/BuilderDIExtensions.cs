@@ -6,7 +6,7 @@ using FileHosting.Domain.Services.Interfaces;
 
 namespace FileHosting.Extensions;
 
-public static class BuilderDiExtensions
+public static class BuilderDIExtensions
 {
     public static void LoadDependencies(this WebApplicationBuilder builder)
     {

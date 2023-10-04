@@ -43,7 +43,7 @@ public class WeatherForecastController : ControllerBase
         using var memoryStream = new MemoryStream();
         await formFile.CopyToAsync(memoryStream);
         
-        var fileDto = new FullFileDto
+        var fileDto = new FileModel
         {
             Name = formFile.FileName,
             Type = formFile.ContentType,

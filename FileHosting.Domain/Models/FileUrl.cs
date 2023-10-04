@@ -1,4 +1,6 @@
-﻿namespace FileHosting.Domain.Models;
+﻿using FileHosting.Domain.Dto;
+
+namespace FileHosting.Domain.Models;
 
 public class FileUrl
 {

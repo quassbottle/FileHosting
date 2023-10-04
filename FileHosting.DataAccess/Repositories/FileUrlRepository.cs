@@ -19,7 +19,7 @@ public class FileUrlRepository : IFileUrlRepository
     {
         var cmd = _dataSource.CreateCommand("UPDATE file_url SET meta_id = @meta_id WHERE id = @id RETURNING *;");
 
-        cmd.Parameters.AddWithValue("meta_id", url.FileMetaId);
+        cmd.Parameters.AddWithValue("meta_id", url.FileDataId);
         
         await using var reader = await cmd.ExecuteReaderAsync();
         
@@ -32,7 +32,7 @@ public class FileUrlRepository : IFileUrlRepository
         return new DbFileUrl()
         {
             Id = guid.Result,
-            FileMetaId = metaId.Result
+            FileDataId = metaId.Result
         };
     }
 
@@ -48,18 +48,20 @@ public class FileUrlRepository : IFileUrlRepository
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_url WHERE id = $1");
         
         cmd.Parameters.AddWithValue(id);
+        
         await using var reader = await cmd.ExecuteReaderAsync();
+        if (!reader.HasRows) return null;
         
         await reader.ReadAsync();
         var guid = reader.GetFieldValueAsync<Guid>("id");
-        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
+        var dataId = reader.GetFieldValueAsync<Guid>("meta_id");
         
-        Task.WaitAll(guid, metaId);
+        Task.WaitAll(guid, dataId);
         
         return new DbFileUrl()
         {
             Id = guid.Result,
-            FileMetaId = metaId.Result
+            FileDataId = dataId.Result
         };
     }
 
@@ -68,20 +70,20 @@ public class FileUrlRepository : IFileUrlRepository
         var cmd = _dataSource.CreateCommand(
             "INSERT INTO file_url (id, meta_id) VALUES (DEFAULT, @meta_id) RETURNING *;");
 
-        cmd.Parameters.AddWithValue("meta_id", url.FileMetaId);
+        cmd.Parameters.AddWithValue("meta_id", url.FileDataId);
 
         await using var reader = await cmd.ExecuteReaderAsync();
 
         await reader.ReadAsync();
         var guid = reader.GetFieldValueAsync<Guid>("id");
-        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
+        var dataId = reader.GetFieldValueAsync<Guid>("meta_id");
 
-        Task.WaitAll(guid, metaId);
+        Task.WaitAll(guid, dataId);
 
         return new DbFileUrl()
         {
             Id = guid.Result,
-            FileMetaId = metaId.Result
+            FileDataId = dataId.Result
         };
     }
 
@@ -89,23 +91,46 @@ public class FileUrlRepository : IFileUrlRepository
     {
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_url");
         await using var reader = await cmd.ExecuteReaderAsync();
-
+        
         var urls = new List<DbFileUrl>();
+        if (!reader.HasRows) return urls;
 
         while (await reader.ReadAsync())
         {
             var guid = reader.GetFieldValueAsync<Guid>("id");
-            var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
+            var dataId = reader.GetFieldValueAsync<Guid>("meta_id");
         
-            Task.WaitAll(guid, metaId);
+            Task.WaitAll(guid, dataId);
         
             urls.Add(new DbFileUrl()
             {
                 Id = guid.Result,
-                FileMetaId = metaId.Result
+                FileDataId = dataId.Result
             });
         }
 
         return urls;
+    }
+
+    public async Task<DbFileNameDataJoin> GetFileUrlAndDataJoinById(Guid id)
+    { 
+        var cmd = _dataSource.CreateCommand("SELECT fm.name, fd.data FROM file_url fu JOIN file_meta fm ON fu.meta_id = fm.id JOIN file_data fd on fm.id = fd.meta_id WHERE fu.id = @id;");
+        cmd.Parameters.AddWithValue("id", id);
+        
+        await using var reader = await cmd.ExecuteReaderAsync();
+
+        await reader.ReadAsync();
+        if (!reader.HasRows) return null;
+        
+        var name = reader.GetFieldValueAsync<string>("name");
+        var data = reader.GetFieldValueAsync<byte[]>("data");
+        
+        Task.WaitAll(name, data);
+        
+        return new DbFileNameDataJoin
+        {
+            Data = data.Result,
+            Name = name.Result
+        };
     }
 }

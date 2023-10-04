@@ -52,9 +52,12 @@ public class FileDataRepository : IFileDataRepository
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_data WHERE id = $1");
         
         cmd.Parameters.AddWithValue(id);
+        
         await using var reader = await cmd.ExecuteReaderAsync();
+        if (!reader.HasRows) return null;
         
         await reader.ReadAsync();
+        
         var guid = reader.GetFieldValueAsync<Guid>("id");
         var fileData = reader.GetFieldValueAsync<byte[]>("data");
         var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
@@ -99,6 +102,7 @@ public class FileDataRepository : IFileDataRepository
         await using var reader = await cmd.ExecuteReaderAsync();
 
         var files = new List<DbFileData>();
+        if (!reader.HasRows) return files;
 
         while (await reader.ReadAsync())
         {
