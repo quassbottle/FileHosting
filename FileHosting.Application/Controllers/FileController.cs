@@ -1,7 +1,10 @@
-﻿using FileHosting.DataAccess.Entities;
+﻿using System.Collections;
+using FileHosting.DataAccess.Entities;
 using FileHosting.Domain.Dto;
 using FileHosting.Domain.Models;
 using FileHosting.Domain.Services.Interfaces;
+using FileHosting.Extensions;
+using FileHosting.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FileHosting.Controllers;
@@ -18,9 +21,10 @@ public class FileController : Controller
     }
     
     [HttpPost("uploadMany")]
-    public async Task<ActionResult<List<FileUploadedDto>>> LoadManyFiles(IFormFileCollection formFiles)
+    public async Task LoadManyFiles(IFormFileCollection formFiles)
     {
-        var uploadedFiles = new List<FileUploadedDto>();
+        //var uploadedFiles = new List<FileUploadedDto>();
+        
         foreach (var formFile in formFiles)
         {
             using var memoryStream = new MemoryStream();
@@ -34,11 +38,9 @@ public class FileController : Controller
             };
             
             var fileUploaded = await _fileUploadService.UploadFile(file);
-
-            uploadedFiles.Add(fileUploaded);
+            await HttpContext.SendSseEventAsync(new SseEvent("file_uploaded", fileUploaded));
         }
-
-        return Ok(uploadedFiles);
+        //return Ok(uploadedFiles);
     }
     
     [HttpPost("upload")]
