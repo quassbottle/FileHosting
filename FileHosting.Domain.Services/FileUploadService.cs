@@ -22,6 +22,11 @@ public class FileUploadService : IFileUploadService
         _fileUrlRepository = fileUrlRepository;
     }
 
+    public async Task<List<DbFileMeta>> GetUploadedFiles()
+    {
+        return await _fileMetaRepository.GetAllAsync();
+    }
+    
     public async Task<DownloadFileDto> DownloadFileById(Guid fileId)
     {
         var file = await _fileMetaRepository.GetFileNameDataTypeJoin(fileId);

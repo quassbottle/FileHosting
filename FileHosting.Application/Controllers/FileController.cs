@@ -1,4 +1,5 @@
-﻿using FileHosting.Domain.Exceptions;
+﻿using FileHosting.DataAccess.Entities;
+using FileHosting.Domain.Exceptions;
 using FileHosting.Domain.Services.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +17,12 @@ public class FileController : Controller
         _fileUploadService = fileUploadService;
     }
 
-
+    [HttpGet]
+    public async Task<ActionResult<List<DbFileMeta>>> GetUploadedFiles()
+    {
+        return await _fileUploadService.GetUploadedFiles();
+    }
+    
     [HttpGet("d/{id}")]
     public async Task<IActionResult> DownloadFile([FromRoute] string id)
     {

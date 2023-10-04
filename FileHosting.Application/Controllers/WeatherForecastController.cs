@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FileHosting.Controllers;
 
 [ApiController]
-[Route("")]
+[Route("aaa")]
 public class WeatherForecastController : ControllerBase
 {
     private readonly IFileUploadService _fileUploadService;
