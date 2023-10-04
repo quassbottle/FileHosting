@@ -37,20 +37,4 @@ public class WeatherForecastController : ControllerBase
         }
     }
 
-    [HttpPost]
-    public async Task<FileUploadedDto> UploadFile(IFormFile formFile)
-    {
-        using var memoryStream = new MemoryStream();
-        await formFile.CopyToAsync(memoryStream);
-        
-        var fileDto = new FileModel
-        {
-            Name = formFile.FileName,
-            Type = formFile.ContentType,
-            SizeInBytes = formFile.Length,
-            Content = memoryStream.ToArray()
-        };
-
-        return await _fileUploadService.UploadFile(fileDto);
-    }
 }
