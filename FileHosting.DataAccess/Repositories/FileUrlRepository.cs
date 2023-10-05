@@ -1,5 +1,8 @@
 ﻿using System.Data;
+using System.Data.Common;
+using System.Reflection;
 using FileHosting.DataAccess.Entities;
+using FileHosting.DataAccess.Extensions;
 using FileHosting.DataAccess.Providers;
 using FileHosting.DataAccess.Repositories.Interfaces;
 using Npgsql;
@@ -42,27 +45,33 @@ public class FileUrlRepository : IFileUrlRepository
         cmd.Parameters.AddWithValue(id);
         return await cmd.ExecuteNonQueryAsync();
     }
-
+    
     public async Task<DbFileUrl> FindByGuidAsync(Guid id)
     {
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_url WHERE id = $1");
         
         cmd.Parameters.AddWithValue(id);
         
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileUrl>();
+        return result.First();
+        /*var cmd = _dataSource.CreateCommand("SELECT * FROM file_url WHERE id = $1");
+
+        cmd.Parameters.AddWithValue(id);
+
         await using var reader = await cmd.ExecuteReaderAsync();
         if (!reader.HasRows) return null;
-        
+
         await reader.ReadAsync();
         var guid = reader.GetFieldValueAsync<Guid>("id");
         var dataId = reader.GetFieldValueAsync<Guid>("meta_id");
-        
+
         Task.WaitAll(guid, dataId);
-        
+
         return new DbFileUrl()
         {
             Id = guid.Result,
             FileDataId = dataId.Result
-        };
+        };*/
     }
 
     public async Task<DbFileUrl> CreateAsync(DbFileUrl url)

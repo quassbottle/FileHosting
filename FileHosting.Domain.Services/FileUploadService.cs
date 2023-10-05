@@ -24,6 +24,7 @@ public class FileUploadService : IFileUploadService
 
     public async Task<List<DbFileMeta>> GetUploadedFiles()
     {
+        await _fileUrlRepository.FindByGuidAsync(Guid.Parse("e61878aa-9b6e-4908-98d9-552f089c4998"));
         return await _fileMetaRepository.GetAllAsync();
     }
     
