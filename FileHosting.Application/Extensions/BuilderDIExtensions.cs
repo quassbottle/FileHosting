@@ -29,6 +29,6 @@ public static class BuilderDIExtensions
 
     private static void LoadServices(WebApplicationBuilder builder)
     {
-        builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+        builder.Services.AddTransient<IFileUploadService, FileUploadService>();
     }
 }

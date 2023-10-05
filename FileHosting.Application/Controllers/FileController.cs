@@ -69,7 +69,7 @@ public class FileController : Controller
     [HttpGet("files/{id}")]
     public async Task<ActionResult> DownloadFile([FromRoute] string id)
     {
-        if (!Guid.TryParse(id, out var guid)) return BadRequest("Invalid file ID");
+        if (!Guid.TryParse(id, out var guid)) throw new ArgumentException("Invalid file ID");
 
         var file = await _fileUploadService.DownloadFileById(guid);
 
@@ -79,10 +79,9 @@ public class FileController : Controller
     [HttpGet("download/{id}")]
     public async Task<IActionResult> DownloadFileByUrl([FromRoute] string id)
     {
-        if (!Guid.TryParse(id, out var guid)) return BadRequest("Invalid URL");
+        if (!Guid.TryParse(id, out var guid)) throw new ArgumentException("Invalid file URL");
         
         var file = await _fileUploadService.DownloadFileByUrl(guid);
-        if (file is null) return BadRequest("Invalid URL");
         
         return File(file.Data, file.Type, file.Name);
     }
@@ -90,7 +89,7 @@ public class FileController : Controller
     [HttpGet("getUrl/{id}")]
     public async Task<ActionResult<FileUrlDto>> CreateUrl([FromRoute] string id)
     {
-        if (!Guid.TryParse(id, out var guid)) return BadRequest("Invalid file ID");
+        if (!Guid.TryParse(id, out var guid)) throw new ArgumentException("Invalid file ID");
         
         var url = await _fileUploadService.GenerateUrl(guid);
 

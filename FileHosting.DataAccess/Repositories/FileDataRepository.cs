@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using FileHosting.DataAccess.Entities;
+using FileHosting.DataAccess.Extensions;
 using FileHosting.DataAccess.Providers;
 using FileHosting.DataAccess.Repositories.Interfaces;
 using Npgsql;
@@ -23,21 +24,8 @@ public class FileDataRepository : IFileDataRepository
         cmd.Parameters.AddWithValue("data", NpgsqlDbType.Bytea, data.Data);
         cmd.Parameters.AddWithValue("meta_id", data.FileMetaId);  
         
-        await using var reader = await cmd.ExecuteReaderAsync();
-        
-        await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var fileData = reader.GetFieldValueAsync<byte[]>("data");
-        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
-        
-        Task.WaitAll(guid, fileData, metaId);
-        
-        return new DbFileData()
-        {
-            Id = guid.Result,
-            FileMetaId = metaId.Result,
-            Data = fileData.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileData>();
+        return result.First();
     }
 
     public async Task<int> DeleteByGuid(Guid id)
@@ -51,25 +39,8 @@ public class FileDataRepository : IFileDataRepository
     {
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_data WHERE id = $1");
         
-        cmd.Parameters.AddWithValue(id);
-        
-        await using var reader = await cmd.ExecuteReaderAsync();
-        if (!reader.HasRows) return null;
-        
-        await reader.ReadAsync();
-        
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var fileData = reader.GetFieldValueAsync<byte[]>("data");
-        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
-        
-        Task.WaitAll(guid, fileData, metaId);
-        
-        return new DbFileData()
-        {
-            Id = guid.Result,
-            FileMetaId = metaId.Result,
-            Data = fileData.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileData>();
+        return result.First();
     }
 
     public async Task<DbFileData> CreateAsync(DbFileData data)
@@ -79,47 +50,15 @@ public class FileDataRepository : IFileDataRepository
         cmd.Parameters.AddWithValue("data", NpgsqlDbType.Bytea, data.Data);
         cmd.Parameters.AddWithValue("meta_id", data.FileMetaId);
         
-        await using var reader = await cmd.ExecuteReaderAsync();
-        
-        await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var fileData = reader.GetFieldValueAsync<byte[]>("data");
-        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
-        
-        Task.WaitAll(guid, fileData, metaId);
-        
-        return new DbFileData()
-        {
-            Id = guid.Result,
-            FileMetaId = metaId.Result,
-            Data = fileData.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileData>();
+        return result.First();
     }
 
     public async Task<List<DbFileData>> GetAllAsync()
     {
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_data");
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        var files = new List<DbFileData>();
-        if (!reader.HasRows) return files;
-
-        while (await reader.ReadAsync())
-        {
-            var guid = reader.GetFieldValueAsync<Guid>("id");
-            var fileData = reader.GetFieldValueAsync<byte[]>("data");
-            var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
         
-            Task.WaitAll(guid, fileData, metaId);
-        
-            files.Add(new DbFileData
-            {
-                Id = guid.Result,
-                FileMetaId = metaId.Result,
-                Data = fileData.Result
-            });
-        }
-
-        return files;
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileData>();
+        return result;
     }
 }
