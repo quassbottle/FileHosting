@@ -110,52 +110,16 @@ public class FileMetaRepository : IFileMetaRepository
         var cmd = _dataSource.CreateCommand("SELECT file_meta.name, file_data.data, file_meta.type FROM file_meta JOIN file_data ON file_meta.id = file_data.meta_id WHERE file_meta.id = @id;");
         cmd.Parameters.AddWithValue("id", id);
         
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        await reader.ReadAsync();
-        if (!reader.HasRows) return null;
-        
-        var name = reader.GetFieldValueAsync<string>("name");
-        var data = reader.GetFieldValueAsync<byte[]>("data");
-        var type = reader.GetFieldValueAsync<string>("type");
-        
-        Task.WaitAll(name, data, type);
-        
-        return new DbFileNameDataTypeJoin
-        {
-            Data = data.Result,
-            Name = name.Result,
-            Type = type.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileNameDataTypeJoin>();
+        return result.First();
     }
 
-    public async Task<DbFileDataMetaJoin> GetFileDataAndMetaJoinById(Guid metaId)
+    public async Task<DbFileDataMetaJoin> GetFileDataMetaJoin(Guid metaId)
     {
         var cmd = _dataSource.CreateCommand("SELECT file_meta.*, file_data.id data_id, file_data.data FROM file_meta JOIN file_data ON file_meta.id = file_data.meta_id WHERE file_meta.id = @id;");
         cmd.Parameters.AddWithValue("id", metaId);
         
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        await reader.ReadAsync();
-        if (!reader.HasRows) return null;
-        
-        var id = reader.GetFieldValueAsync<Guid>("id");
-        var size = reader.GetFieldValueAsync<long>("size");
-        var name = reader.GetFieldValueAsync<string>("name");
-        var type = reader.GetFieldValueAsync<string>("type");
-        var dataId = reader.GetFieldValueAsync<Guid>("data_id");
-        var data = reader.GetFieldValueAsync<byte[]>("data");
-        
-        Task.WaitAll(id, size, name, type, dataId, data);
-
-        return new DbFileDataMetaJoin
-        {
-            Id = id.Result,
-            Size = size.Result,
-            Name = name.Result,
-            Type = type.Result,
-            DataId = dataId.Result,
-            Data = data.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileDataMetaJoin>();
+        return result.First();
     }
 }
