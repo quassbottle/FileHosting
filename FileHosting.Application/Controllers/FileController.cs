@@ -57,7 +57,7 @@ public class FileController : Controller
             Data = memoryStream.ToArray()
         };
 
-        return await _fileUploadService.UploadFile(fileDto);
+        return Ok(await _fileUploadService.UploadFile(fileDto));
     }
 
     [HttpGet("files")]
@@ -77,7 +77,7 @@ public class FileController : Controller
     }
 
     [HttpGet("download/{id}")]
-    public async Task<ActionResult<DownloadFileDto>> DownloadFileByUrl([FromRoute] string id)
+    public async Task<IActionResult> DownloadFileByUrl([FromRoute] string id)
     {
         if (!Guid.TryParse(id, out var guid)) return BadRequest("Invalid URL");
         
@@ -94,6 +94,6 @@ public class FileController : Controller
         
         var url = await _fileUploadService.GenerateUrl(guid);
 
-        return url;
+        return Ok(url);
     }
 }

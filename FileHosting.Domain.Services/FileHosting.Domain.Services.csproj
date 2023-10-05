@@ -8,6 +8,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\FileHosting.DataAccess\FileHosting.DataAccess.csproj" />
+      <ProjectReference Include="..\FileHosting.Domain\FileHosting.Domain.csproj" />
     </ItemGroup>
 
 
