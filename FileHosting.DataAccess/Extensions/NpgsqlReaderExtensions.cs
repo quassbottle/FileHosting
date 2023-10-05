@@ -19,7 +19,7 @@ public static class NpgsqlReaderExtensions
     {
         await using var reader = await cmd.ExecuteReaderAsync();
 
-        if (!reader.HasRows) throw new SqlNullValueException($"No rows found on script: \"{cmd}\"");
+        if (!reader.HasRows) throw new SqlNullValueException($"Nothing found on request");
 
         var list = new List<T>();
 
