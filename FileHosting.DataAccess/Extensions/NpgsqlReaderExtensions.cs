@@ -29,7 +29,7 @@ public static class NpgsqlReaderExtensions
 
             foreach (var prop in typeof(T).GetProperties())
             {
-                var attribute = prop.GetCustomAttribute<FieldAttribute>();
+                var attribute = prop.GetCustomAttribute<ColumnAttribute>();
                 if (attribute == null) continue;
                 string column = attribute.Title;
                 object value = await reader.GetValueAsync(prop.GetType(), column);

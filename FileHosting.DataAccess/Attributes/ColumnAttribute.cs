@@ -1,10 +1,10 @@
 ﻿namespace FileHosting.DataAccess.Attributes;
 
-public class FieldAttribute : Attribute
+public class ColumnAttribute : Attribute
 {
     public string Title { get; }
     
-    public FieldAttribute(string title)
+    public ColumnAttribute(string title)
     {
         Title = title;
     }

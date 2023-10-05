@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using FileHosting.DataAccess.Entities;
+using FileHosting.DataAccess.Extensions;
 using FileHosting.DataAccess.Providers;
 using FileHosting.DataAccess.Repositories.Interfaces;
 using Npgsql;
@@ -23,23 +24,8 @@ public class FileMetaRepository : IFileMetaRepository
         cmd.Parameters.AddWithValue("name", meta.Name);   
         cmd.Parameters.AddWithValue("type", meta.Type);   
         
-        await using var reader = await cmd.ExecuteReaderAsync();
-        
-        await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var size = reader.GetFieldValueAsync<long>("size");
-        var name = reader.GetFieldValueAsync<string>("name");
-        var type = reader.GetFieldValueAsync<string>("type");
-        
-        Task.WaitAll(guid, size, name, type);
-        
-        return new DbFileMeta
-        {
-            Id = guid.Result,
-            Name = name.Result,
-            Size = size.Result,
-            Type = type.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileMeta>();
+        return result.First();
     }
 
     public async Task<int> DeleteByGuid(Guid id)
@@ -54,25 +40,9 @@ public class FileMetaRepository : IFileMetaRepository
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_meta WHERE id = $1");
         
         cmd.Parameters.AddWithValue(id);
-        
-        await using var reader = await cmd.ExecuteReaderAsync();
-        if (!reader.HasRows) return null;
-        
-        await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var size = reader.GetFieldValueAsync<long>("size");
-        var name = reader.GetFieldValueAsync<string>("name");
-        var type = reader.GetFieldValueAsync<string>("type");
-        
-        Task.WaitAll(guid, size, name, type);
-        
-        return new DbFileMeta
-        {
-            Id = guid.Result,
-            Name = name.Result,
-            Size = size.Result,
-            Type = type.Result
-        };
+
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileMeta>();
+        return result.First();
     }
 
     public async Task<DbFileMeta> CreateAsync(DbFileMeta meta)
@@ -83,24 +53,8 @@ public class FileMetaRepository : IFileMetaRepository
         cmd.Parameters.AddWithValue("name", meta.Name);
         cmd.Parameters.AddWithValue("type", meta.Type);
         
-        await using var reader = await cmd.ExecuteReaderAsync();
-        
-        await reader.ReadAsync();
-        
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var size = reader.GetFieldValueAsync<long>("size");
-        var name = reader.GetFieldValueAsync<string>("name");
-        var type = reader.GetFieldValueAsync<string>("type");
-        
-        Task.WaitAll(guid, size, name, type);
-        
-        return new DbFileMeta
-        {
-            Id = guid.Result,
-            Name = name.Result,
-            Size = size.Result,
-            Type = type.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileMeta>();
+        return result.First();
     }
     
     /*public async Task<List<FileMeta>> GetAllReflectionAsync() // todo: may do later
@@ -146,30 +100,9 @@ public class FileMetaRepository : IFileMetaRepository
     public async Task<List<DbFileMeta>> GetAllAsync()
     {
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_meta");
-        await using var reader = await cmd.ExecuteReaderAsync();
         
-        var meta = new List<DbFileMeta>();
-        if (!reader.HasRows) return meta;
-
-        while (await reader.ReadAsync())
-        {
-            var guid = reader.GetFieldValueAsync<Guid>("id");
-            var size = reader.GetFieldValueAsync<long>("size");
-            var name = reader.GetFieldValueAsync<string>("name");
-            var type = reader.GetFieldValueAsync<string>("type");
-        
-            Task.WaitAll(guid, size, name, type);
-        
-            meta.Add(new DbFileMeta
-            {
-                Id = guid.Result,
-                Name = name.Result,
-                Size = size.Result,
-                Type = type.Result
-            });
-        }
-
-        return meta;
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileMeta>();
+        return result;
     }
     
     public async Task<DbFileNameDataTypeJoin> GetFileNameDataTypeJoin(Guid id)
