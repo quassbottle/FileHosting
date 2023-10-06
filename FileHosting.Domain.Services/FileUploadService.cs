@@ -68,10 +68,8 @@ public class FileUploadService : IFileUploadService
 
         return new FileUrlDto
         {
-            Id = dbUrl.Id,
-            Name = dbFileNameDataType.Name,
-            SizeInBytes = dbFileNameDataType.Data.Length,
-            Type = dbFileNameDataType.Type
+            UrlId = dbUrl.Id,
+            Name = dbFileNameDataType.Name
         };
     }
     

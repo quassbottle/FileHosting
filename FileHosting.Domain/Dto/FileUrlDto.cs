@@ -4,8 +4,6 @@ namespace FileHosting.Domain.Dto;
 
 public class FileUrlDto
 {
-    public Guid Id { get; set; }
-    public long SizeInBytes { get; set; }
+    public Guid UrlId { get; set; }
     public string Name { get; set; }
-    public string Type { get; set; }
 }
