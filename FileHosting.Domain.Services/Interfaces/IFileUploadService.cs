@@ -6,9 +6,10 @@ namespace FileHosting.Domain.Services.Interfaces;
 
 public interface IFileUploadService
 {
-    Task<FileUploadedDto> UploadFile(FileModel fileModel);
-    Task<DownloadFileDto> DownloadFileById(Guid fileId);
-    Task<List<DbFileMeta>> GetUploadedFiles();
-    Task<FileUrlDto> GenerateUrl(Guid fileId);
-    Task<DownloadFileDto> DownloadFileByUrl(Guid urlId);
+    Task<FileUploadedDto> UploadFileAsync(FileModel fileModel);
+    Task<DownloadFileDto> DownloadFileByIdAsync(Guid fileId);
+    Task<List<DbFileMeta>> GetUploadedFilesAsync();
+    Task<FileUrlDto> GenerateUrlAsync(Guid fileId);
+    Task<DownloadFileDto> DownloadFileByUrlAsync(Guid urlId);
+    Task<List<DbFileMeta>> GetNextOffsetAsync(FileMetaPageRequestDto request);
 }

@@ -1,5 +1,8 @@
 ﻿using System.Data;
+using System.Data.Common;
+using System.Reflection;
 using FileHosting.DataAccess.Entities;
+using FileHosting.DataAccess.Extensions;
 using FileHosting.DataAccess.Providers;
 using FileHosting.DataAccess.Repositories.Interfaces;
 using Npgsql;
@@ -21,19 +24,8 @@ public class FileUrlRepository : IFileUrlRepository
 
         cmd.Parameters.AddWithValue("meta_id", url.FileDataId);
         
-        await using var reader = await cmd.ExecuteReaderAsync();
-        
-        await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var metaId = reader.GetFieldValueAsync<Guid>("meta_id");
-        
-        Task.WaitAll(guid, metaId);
-        
-        return new DbFileUrl()
-        {
-            Id = guid.Result,
-            FileDataId = metaId.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileUrl>();
+        return result.First();
     }
 
     public async Task<int> DeleteByGuid(Guid id)
@@ -42,27 +34,15 @@ public class FileUrlRepository : IFileUrlRepository
         cmd.Parameters.AddWithValue(id);
         return await cmd.ExecuteNonQueryAsync();
     }
-
+    
     public async Task<DbFileUrl> FindByGuidAsync(Guid id)
     {
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_url WHERE id = $1");
         
         cmd.Parameters.AddWithValue(id);
         
-        await using var reader = await cmd.ExecuteReaderAsync();
-        if (!reader.HasRows) return null;
-        
-        await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var dataId = reader.GetFieldValueAsync<Guid>("meta_id");
-        
-        Task.WaitAll(guid, dataId);
-        
-        return new DbFileUrl()
-        {
-            Id = guid.Result,
-            FileDataId = dataId.Result
-        };
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileUrl>();
+        return result.First();
     }
 
     public async Task<DbFileUrl> CreateAsync(DbFileUrl url)
@@ -71,45 +51,17 @@ public class FileUrlRepository : IFileUrlRepository
             "INSERT INTO file_url (id, meta_id) VALUES (DEFAULT, @meta_id) RETURNING *;");
 
         cmd.Parameters.AddWithValue("meta_id", url.FileDataId);
-
-        await using var reader = await cmd.ExecuteReaderAsync();
-
-        await reader.ReadAsync();
-        var guid = reader.GetFieldValueAsync<Guid>("id");
-        var dataId = reader.GetFieldValueAsync<Guid>("meta_id");
-
-        Task.WaitAll(guid, dataId);
-
-        return new DbFileUrl()
-        {
-            Id = guid.Result,
-            FileDataId = dataId.Result
-        };
+        
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileUrl>();
+        return result.First();
     }
 
     public async Task<List<DbFileUrl>> GetAllAsync()
     {
         var cmd = _dataSource.CreateCommand("SELECT * FROM file_url");
-        await using var reader = await cmd.ExecuteReaderAsync();
         
-        var urls = new List<DbFileUrl>();
-        if (!reader.HasRows) return urls;
-
-        while (await reader.ReadAsync())
-        {
-            var guid = reader.GetFieldValueAsync<Guid>("id");
-            var dataId = reader.GetFieldValueAsync<Guid>("meta_id");
-        
-            Task.WaitAll(guid, dataId);
-        
-            urls.Add(new DbFileUrl()
-            {
-                Id = guid.Result,
-                FileDataId = dataId.Result
-            });
-        }
-
-        return urls;
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileUrl>();
+        return result;
     }
 
     public async Task<DbFileNameDataTypeJoin> GetFileNameDataTypeJoin(Guid id)

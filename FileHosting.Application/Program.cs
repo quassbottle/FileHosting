@@ -1,6 +1,7 @@
 using FileHosting.DataAccess.Repositories;
 using FileHosting.Domain.Services;
 using FileHosting.Extensions;
+using FileHosting.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,7 @@ app.MigrateDatabase<Program>();
 
 app.UseHttpsRedirection();
 
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 app.UseAuthorization();
 
 app.MapControllers();

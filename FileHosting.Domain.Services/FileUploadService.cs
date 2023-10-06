@@ -22,12 +22,12 @@ public class FileUploadService : IFileUploadService
         _fileUrlRepository = fileUrlRepository;
     }
 
-    public async Task<List<DbFileMeta>> GetUploadedFiles()
+    public async Task<List<DbFileMeta>> GetUploadedFilesAsync()
     {
         return await _fileMetaRepository.GetAllAsync();
     }
     
-    public async Task<DownloadFileDto> DownloadFileById(Guid fileId)
+    public async Task<DownloadFileDto> DownloadFileByIdAsync(Guid fileId)
     {
         var file = await _fileMetaRepository.GetFileNameDataTypeJoin(fileId);
         if (file is null) throw new FileNotFoundException($"File with UUID {fileId} has not been found");
@@ -39,7 +39,7 @@ public class FileUploadService : IFileUploadService
         };
     }
 
-    public async Task<DownloadFileDto> DownloadFileByUrl(Guid urlId)
+    public async Task<DownloadFileDto> DownloadFileByUrlAsync(Guid urlId)
     {
         var dbUrl = await _fileUrlRepository.FindByGuidAsync(urlId);
         var dbFileNameDataType = await _fileUrlRepository.GetFileNameDataTypeJoin(dbUrl.Id);
@@ -52,8 +52,13 @@ public class FileUploadService : IFileUploadService
         await _fileUrlRepository.DeleteByGuid(urlId);
         return dto;
     }
-    
-    public async Task<FileUrlDto> GenerateUrl(Guid fileId)
+
+    public async Task<List<DbFileMeta>> GetNextOffsetAsync(FileMetaPageRequestDto request)
+    {
+        return await _fileMetaRepository.GetNextOffsetAsync(request.Offset, request.Next);
+    }
+
+    public async Task<FileUrlDto> GenerateUrlAsync(Guid fileId)
     {
         var dbUrl = await _fileUrlRepository.CreateAsync(new DbFileUrl
         {
@@ -70,7 +75,7 @@ public class FileUploadService : IFileUploadService
         };
     }
     
-    public async Task<FileUploadedDto> UploadFile(FileModel fileModel)
+    public async Task<FileUploadedDto> UploadFileAsync(FileModel fileModel)
     {
         var dbFileMeta = await _fileMetaRepository.CreateAsync(new DbFileMeta
         {
@@ -84,7 +89,7 @@ public class FileUploadService : IFileUploadService
             Data = fileModel.Data
         });
 
-        var result = await _fileMetaRepository.GetFileDataAndMetaJoinById(dbFileMeta.Id);
+        var result = await _fileMetaRepository.GetFileDataMetaJoin(dbFileMeta.Id);
 
         return new FileUploadedDto
         {
