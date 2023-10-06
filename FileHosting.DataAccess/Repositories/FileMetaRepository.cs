@@ -104,6 +104,16 @@ public class FileMetaRepository : IFileMetaRepository
         var result = await cmd.ExecuteAutoReaderAsync<DbFileMeta>();
         return result;
     }
+
+    public async Task<List<DbFileMeta>> GetNextOffsetAsync(int offset, int next)
+    {
+        var cmd = _dataSource.CreateCommand("SELECT * FROM file_meta OFFSET @offset FETCH NEXT @next ROWS ONLY;");
+        cmd.Parameters.AddWithValue("offset", offset);
+        cmd.Parameters.AddWithValue("next", next);
+
+        var result = await cmd.ExecuteAutoReaderAsync<DbFileMeta>();
+        return result;
+    }
     
     public async Task<DbFileNameDataTypeJoin> GetFileNameDataTypeJoin(Guid id)
     { 

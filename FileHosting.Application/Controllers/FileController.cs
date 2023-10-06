@@ -37,7 +37,7 @@ public class FileController : Controller
                 Data = memoryStream.ToArray()
             };
             
-            var fileUploaded = await _fileUploadService.UploadFile(file);
+            var fileUploaded = await _fileUploadService.UploadFileAsync(file);
             await HttpContext.SendSseEventAsync(new SseEvent("file_uploaded", fileUploaded));
         }
         //return Ok(uploadedFiles);
@@ -57,13 +57,19 @@ public class FileController : Controller
             Data = memoryStream.ToArray()
         };
 
-        return Ok(await _fileUploadService.UploadFile(fileDto));
+        return Ok(await _fileUploadService.UploadFileAsync(fileDto));
     }
 
     [HttpGet("files")]
     public async Task<ActionResult<List<DbFileMeta>>> GetUploadedFiles()
     {
-        return await _fileUploadService.GetUploadedFiles();
+        return await _fileUploadService.GetUploadedFilesAsync();
+    }
+    
+    [HttpPost("files/page")]
+    public async Task<ActionResult<List<DbFileMeta>>> GetUploadedFiles(FileMetaPageRequestDto request)
+    {
+        return await _fileUploadService.GetNextOffsetAsync(request);
     }
     
     [HttpGet("files/{id}")]
@@ -71,7 +77,7 @@ public class FileController : Controller
     {
         if (!Guid.TryParse(id, out var guid)) throw new ArgumentException("Invalid file ID");
 
-        var file = await _fileUploadService.DownloadFileById(guid);
+        var file = await _fileUploadService.DownloadFileByIdAsync(guid);
 
         return File(file.Data, file.Type, file.Name);
     }
@@ -81,7 +87,7 @@ public class FileController : Controller
     {
         if (!Guid.TryParse(id, out var guid)) throw new ArgumentException("Invalid file URL");
         
-        var file = await _fileUploadService.DownloadFileByUrl(guid);
+        var file = await _fileUploadService.DownloadFileByUrlAsync(guid);
         
         return File(file.Data, file.Type, file.Name);
     }
@@ -91,7 +97,7 @@ public class FileController : Controller
     {
         if (!Guid.TryParse(id, out var guid)) throw new ArgumentException("Invalid file ID");
         
-        var url = await _fileUploadService.GenerateUrl(guid);
+        var url = await _fileUploadService.GenerateUrlAsync(guid);
 
         return Ok(url);
     }
